@@ -1,11 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"image"
 	godraw "image/draw"
 	"log"
-	"os"
 	"sync"
 	"time"
 
@@ -188,6 +186,10 @@ func shinyMain(s screen.Screen) {
 			if ch == '\r' {
 				ch = '\n'
 			}
+			// On macs modifiers dont generate normal runes.
+			if e.Modifiers & key.ModMeta != 0 && e.Rune == -1 {
+				ch += draw.KeyCmd
+			}
 			if ch == -1 && int(e.Code) < len(codeKeys) {
 				ch = codeKeys[e.Code]
 			}
@@ -198,7 +200,6 @@ func shinyMain(s screen.Screen) {
 		case mouse.Event:
 			// TODO keyboard modifiers
 			// TODO buttons
-			fmt.Fprintf(os.Stderr, "M %T\n", e)
 			if e.Button > 0 {
 				if e.Direction == mouse.DirPress {
 					buttons |= 1 << (e.Button - 1)
