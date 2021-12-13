@@ -1,4 +1,5 @@
-// Creates a new text file with the current directory as its tag and copies stdin into the window.
+// Creates a new text file with the current directory as its tag and copies stdin into the window. If past arguments
+// executes the arguments as a command and uses that command's stdout instead.
 package main
 
 import (
@@ -6,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path"
 )
 
 func main() {
@@ -24,7 +26,7 @@ func run() error {
 	if err != nil {
 		return fmt.Errorf("lookup wd: %w", err)
 	}
-	err = win.Name(wd+"/") // Trailing slash makes right click file names work
+	err = win.Name(path.Clean(wd)+"/") // Trailing slash makes right click file names work
 	if err != nil {
 		return fmt.Errorf("set name: %w", err)
 	}
@@ -32,13 +34,16 @@ func run() error {
 	if err != nil {
 		return fmt.Errorf("hide menu: %w", err)
 	}
-	_, err = io.Copy(writer{
+
+	dst := writer{
 		win: win,
 		f:   "data",
-	}, os.Stdin)
+	}
+	_, err = io.Copy(dst, os.Stdin)
 	if err != nil {
 		return fmt.Errorf("copy data: %w", err)
 	}
+
 	err = win.Ctl("clean")
 	if err != nil {
 		return fmt.Errorf("mark window clean: %w", err)
