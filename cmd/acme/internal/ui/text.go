@@ -220,7 +220,7 @@ func Texttype(t *wind.Text, r rune) {
 		}
 		t.IQ1 = t.Q0
 		return
-	case 0x08, // ^H: erase character
+	case 0x7F, // ^H: erase character
 		0x15, // ^U: erase line
 		0x17: // ^W: erase word
 		if t.Q0 == 0 { // nothing to erase

@@ -482,7 +482,7 @@ Err:
 
 func Textbswidth(t *Text, c rune) int {
 	// there is known to be at least one character to erase
-	if c == 0x08 { // ^H: erase character
+	if c == 0x7F { // ^H: erase character
 		return 1
 	}
 	q := t.Q0
