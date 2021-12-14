@@ -179,7 +179,7 @@ func shinyMain(s screen.Screen) {
 
 		case key.Event:
 			// TODO buttons
-			if e.Direction != key.DirPress {
+			if e.Direction == key.DirRelease {
 				break
 			}
 			ch := e.Rune
