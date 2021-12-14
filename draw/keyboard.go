@@ -1,8 +1,6 @@
 package draw
 
-import (
-	"log"
-)
+import "log"
 
 const (
 	KeyFn = '\uF000'
@@ -21,7 +19,7 @@ const (
 	KeyAlt       = KeyFn | 0x15
 	KeyShift     = KeyFn | 0x16
 	KeyCtl       = KeyFn | 0x17
-	KeyBackspace = 0x7F
+	KeyBackspace = 0x08
 	KeyDelete    = 0x7F
 	KeyEscape    = 0x1b
 	KeyEOF       = 0x04

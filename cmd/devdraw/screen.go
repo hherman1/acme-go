@@ -187,8 +187,12 @@ func shinyMain(s screen.Screen) {
 				ch = '\n'
 			}
 			// On macs modifiers dont generate normal runes.
-			if e.Modifiers & key.ModMeta != 0 && e.Rune == -1 {
+			if e.Modifiers&key.ModMeta != 0 && e.Rune == -1 {
 				ch += draw.KeyCmd
+			}
+			// On macs code delete backspace generates the wrong key.
+			if e.Code == key.CodeDeleteBackspace {
+				ch = codeKeys[e.Code]
 			}
 			if ch == -1 && int(e.Code) < len(codeKeys) {
 				ch = codeKeys[e.Code]
@@ -278,12 +282,13 @@ var codeKeys = [...]rune{
 	key.CodeHome:   draw.KeyHome,
 	key.CodePageUp: draw.KeyPageUp,
 	// CodeDeleteForward
-	key.CodeEnd:        draw.KeyEnd,
-	key.CodePageDown:   draw.KeyPageDown,
-	key.CodeRightArrow: draw.KeyRight,
-	key.CodeLeftArrow:  draw.KeyLeft,
-	key.CodeDownArrow:  draw.KeyDown,
-	key.CodeUpArrow:    draw.KeyUp,
+	key.CodeDeleteBackspace: draw.KeyBackspace,
+	key.CodeEnd:             draw.KeyEnd,
+	key.CodePageDown:        draw.KeyPageDown,
+	key.CodeRightArrow:      draw.KeyRight,
+	key.CodeLeftArrow:       draw.KeyLeft,
+	key.CodeDownArrow:       draw.KeyDown,
+	key.CodeUpArrow:         draw.KeyUp,
 	// CodeKeypadNumLock
 	// CodeHelp
 	// CodeMute
