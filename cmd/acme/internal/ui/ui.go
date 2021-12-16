@@ -15,7 +15,10 @@
 package ui
 
 import (
+	"strings"
 	"unicode/utf8"
+
+	"github.com/atotto/clipboard"
 
 	"9fans.net/go/cmd/acme/internal/adraw"
 	"9fans.net/go/cmd/acme/internal/bufs"
@@ -104,7 +107,10 @@ func XCut(et, t, _ *wind.Text, dosnarf, docut bool, _ []rune) {
 		}
 		return
 	}
+
 	if dosnarf {
+		// For copying to sytem clipboard
+		var s strings.Builder
 		q0 := t.Q0
 		q1 := t.Q1
 		snarfbuf.Delete(0, snarfbuf.Len())
@@ -115,11 +121,14 @@ func XCut(et, t, _ *wind.Text, dosnarf, docut bool, _ []rune) {
 				n = bufs.RuneLen
 			}
 			t.File.Read(q0, r[:n])
+
 			snarfbuf.Insert(snarfbuf.Len(), r[:n])
+			_, _ = s.WriteString(string(r[:n]))
 			q0 += n
 		}
 		bufs.FreeRunes(r)
 		acmeputsnarf()
+		clipboard.WriteAll(s.String())
 	}
 	if docut {
 		wind.Textdelete(t, t.Q0, t.Q1, true)
@@ -159,20 +168,24 @@ func XPaste(et, t, _ *wind.Text, selectall, tobody bool, _ []rune) {
 		wind.Winlock(t.W, c)
 	}
 	XCut(t, t, nil, false, true, nil)
-	q := 0
+	//q := 0
 	q0 := t.Q0
 	q1 := t.Q0 + snarfbuf.Len()
 	r := bufs.AllocRunes()
-	for q0 < q1 {
-		n := q1 - q0
-		if n > bufs.RuneLen {
-			n = bufs.RuneLen
+	s, _ := clipboard.ReadAll()
+	wind.Textinsert(t, q0, []rune(s), true)
+	/*
+		for q0 < q1 {
+			n := q1 - q0
+			if n > bufs.RuneLen {
+				n = bufs.RuneLen
+			}
+			snarfbuf.Read(q, r[:n])
+			wind.Textinsert(t, q0, r[:n], true)
+			q += n
+			q0 += n
 		}
-		snarfbuf.Read(q, r[:n])
-		wind.Textinsert(t, q0, r[:n], true)
-		q += n
-		q0 += n
-	}
+	*/
 	bufs.FreeRunes(r)
 	if selectall {
 		wind.Textsetselect(t, t.Q0, q1)
