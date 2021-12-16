@@ -157,7 +157,8 @@ func XPaste(et, t, _ *wind.Text, selectall, tobody bool, _ []rune) {
 	}
 
 	acmegetsnarf()
-	if t == nil || snarfbuf.Len() == 0 {
+	s, _ := clipboard.ReadAll()
+	if t == nil || len(s) == 0 {
 		return
 	}
 	if t.W != nil && et.W != t.W {
@@ -170,9 +171,7 @@ func XPaste(et, t, _ *wind.Text, selectall, tobody bool, _ []rune) {
 	XCut(t, t, nil, false, true, nil)
 	//q := 0
 	q0 := t.Q0
-	q1 := t.Q0 + snarfbuf.Len()
-	r := bufs.AllocRunes()
-	s, _ := clipboard.ReadAll()
+	q1 := t.Q0 + len(s)
 	wind.Textinsert(t, q0, []rune(s), true)
 	/*
 		for q0 < q1 {
@@ -186,7 +185,6 @@ func XPaste(et, t, _ *wind.Text, selectall, tobody bool, _ []rune) {
 			q0 += n
 		}
 	*/
-	bufs.FreeRunes(r)
 	if selectall {
 		wind.Textsetselect(t, t.Q0, q1)
 	} else {
