@@ -212,6 +212,14 @@ func shinyMain(s screen.Screen) {
 					buttons &^= 1 << (e.Button - 1)
 				}
 			}
+
+			if e.Button == mouse.ButtonWheelUp {
+				buttons = 8 // 4th bit
+			} else if e.Button == mouse.ButtonWheelDown {
+				buttons = 16 // 5th bit
+			} else if buttons == 8 || buttons == 16 {
+				buttons = 0
+			}
 			if buttons == 1 {
 				if e.Modifiers&key.ModAlt != 0 {
 					buttons = 2
@@ -220,7 +228,7 @@ func shinyMain(s screen.Screen) {
 				}
 			}
 			gfx_abortcompose(client)
-			// fmt.Fprintf(os.Stderr, "mousetrack %d %d %#b\n", int(e.X), int(e.Y), buttons)
+			// fmt.Fprintf(os.Stderr, "mousetrack %d %d %#b %v\n", int(e.X), int(e.Y), buttons, e.Button)
 			gfx_mousetrack(client, int(e.X), int(e.Y), buttons, uint32(time.Now().UnixNano()/1e6))
 
 		case paint.Event:
